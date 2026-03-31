@@ -320,3 +320,57 @@ docker stats
 	$ git log
 	$ git push -u origin main
 
+## Trouble Shooting
+
+### Trouble Shooting1
+
+#### 처음 만난 ERROR
+```zsh
+docker rm ws1
+```
+Error response from daemon: cannot remove container "ws1": container is running: stop the container before removing or force remove
+
+-> 현재 실행중이라 삭제 불가능 에러 발생
+
+```zsh
+# 방법1
+docker rm --force ws1
+
+# 방법2
+docker stop ws1
+docker rm ws1
+```
+-> Error를 읽고 안내하는 방법으로 문제 해결
+
+### Trouble Shooting2
+#### Dockerfile 생성중 만난 문제
+
+``` dockerfile
+COPY app/ /usr/share/nginx/html
+COPY app /usr/share/nginx/html
+```
+-> 해당 코드의 차이를 구분하지 못했음
+
+```Dockerfile
+COPY app/ /usr/share/nginx/html/ # app 폴더 안의 내용물 → html/ 안으로 복사 
+COPY app /usr/share/nginx/html/ # app 폴더 자체 → html/app/ 으로 복사
+
+#결과 비교
+COPY app/ → /usr/share/nginx/html/index.html 
+COPY app → /usr/share/nginx/html/app/index.html
+```
+-> app 폴더 자체를 copy
+-> app/ 폴더 내부를 copy
+
+```Dockerfile
+WORKDIR [filename]
+```
+-> 해당 코드의 의미를 알지 못함
+
+```Dockerfile
+WORKDIR /app
+```
+-> 해당 코드의 의미를 알지 못함
+
+* exec로 bash 접근시 현재 위치가 작업 폴더에 자동으로 위치
+* RUN으로 파일 생성 명령어를 작성시 작업폴더에 생성
